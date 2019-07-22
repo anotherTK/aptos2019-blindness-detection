@@ -211,7 +211,7 @@ class EfficientNet(nn.Module):
 
         self._init_weights()
 
-    def __init_weights(self):
+    def _init_weights(self):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_uniform_(m.weight, a=1)

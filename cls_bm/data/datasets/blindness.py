@@ -1,17 +1,18 @@
 
 import os
 import torch
+import torch.utils.data
 import json
 from PIL import Image
 
 class BlindnessDataset(torch.utils.data.Dataset):
 
-    def __init__(self, root, stage, transform=None):
+    def __init__(self, root, stage, transforms=None):
         super(BlindnessDataset, self).__init__()
 
         self.root = root
         self.stage = stage
-        self.transform = transform
+        self.transforms = transforms
 
         assert self.stage in ['train', 'val', 'test']
 
@@ -25,9 +26,9 @@ class BlindnessDataset(torch.utils.data.Dataset):
 
         data = self.data[index]
 
-        img = Image.open(os.path.join(self.root, data[0]))
-        if self.transform:
-            img = self.transform(img)
+        img = Image.open(os.path.join(self.root, data[0] + '.jpg'))
+        if self.transforms:
+            img = self.transforms(img)
 
         if self.stage == 'test':
             return img, data[0]

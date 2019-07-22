@@ -50,15 +50,18 @@ class ColorJitter(object):
                  contrast=None,
                  saturation=None,
                  hue=None,
+                 prob=0.1
                  ):
         self.color_jitter = torchvision.transforms.ColorJitter(
             brightness=brightness,
             contrast=contrast,
             saturation=saturation,
             hue=hue,)
+        self.prob = prob
 
     def __call__(self, image):
-        image = self.color_jitter(image)
+        if random.random() < self.prob:
+            image = self.color_jitter(image)
         return image
 
 

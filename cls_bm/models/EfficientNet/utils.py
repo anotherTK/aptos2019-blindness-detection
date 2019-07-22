@@ -270,8 +270,22 @@ url_map = {
 }
 
 
+def trim_model(state_dict, keys):
+    trimed_state_dict = collections.OrderedDict()
+    for key, value in state_dict.items():
+        flag = False
+        for trim_key in keys:
+            if trim_key in key:
+                flag = True
+                break
+        if not flag:
+            trimed_state_dict[key] = value
+
+    return trimed_state_dict
+
 def load_pretrained_weights(model, model_name):
     loaded_state_dict = model_zoo.load_url(url_map[model_name])
+    loaded_state_dict = trim_model(loaded_state_dict, ["_fc"])
     model_state_dict = model.state_dict()
     align_and_update_state_dicts(model_state_dict, loaded_state_dict)
     model.load_state_dict(model_state_dict)

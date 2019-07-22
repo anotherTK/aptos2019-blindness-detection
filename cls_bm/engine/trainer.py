@@ -55,12 +55,8 @@ def do_train(
     model.train()
     start_training_time = time.time()
     end = time.time()
-    for iteration, (images, targets, _) in enumerate(data_loader, start_iter):
+    for iteration, (images, targets) in enumerate(data_loader, start_iter):
 
-        if any(len(target) < 1 for target in targets):
-            logger.error(
-                f"Iteration={iteration + 1} || Image Ids used for training {_} || targets Length={[len(target) for target in targets]}")
-            continue
         data_time = time.time() - end
         iteration = iteration + 1
         arguments["iteration"] = iteration
@@ -68,7 +64,7 @@ def do_train(
         scheduler.step()
 
         images = images.to(device)
-        targets = [target.to(device) for target in targets]
+        targets = targets.to(device)
 
         loss_dict = model(images, targets)
 
