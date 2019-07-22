@@ -1,0 +1,4 @@
+OUTPUT_DIR: "work_dirs/efficientnet-b4"
+MODEL:
+  NAME: "efficientnet-b4"
+  NUM_CLASSES: 5
