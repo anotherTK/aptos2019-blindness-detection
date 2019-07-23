@@ -45,12 +45,12 @@ class RandomVerticalFlip(object):
 
 class RandomRotation(object):
     def __init__(self, degrees, prob=0.5):
-        self.degrees = degrees
+        self.t = torchvision.transforms.RandomRotation(degrees)
         self.prob = prob
 
     def __call__(self, image):
         if random.random() < self.prob:
-            image = torchvision.transforms.RandomRotation(self.degrees)
+            image = self.t(image)
         return image
 
 

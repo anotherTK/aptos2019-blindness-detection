@@ -42,7 +42,7 @@ def build_transforms(cfg, is_train=True):
             T.RandomResizedCrop(input_size),
             T.RandomHorizontalFlip(flip_horizontal_prob),
             T.RandomVerticalFlip(flip_vertical_prob),
-            T.RandomRotation(rotation_degrees, rotation_prob)
+            T.RandomRotation(rotation_degrees, rotation_prob),
             T.ToTensor(),
             normalize_transform,
         ]
