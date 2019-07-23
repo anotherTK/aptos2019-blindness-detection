@@ -43,6 +43,16 @@ class RandomVerticalFlip(object):
             image = F.vflip(image)
         return image
 
+class RandomRotation(object):
+    def __init__(self, degrees, prob=0.5):
+        self.degrees = degrees
+        self.prob = prob
+
+    def __call__(self, image):
+        if random.random() < self.prob:
+            image = torchvision.transforms.RandomRotation(self.degrees)
+        return image
+
 
 class ColorJitter(object):
     def __init__(self,
