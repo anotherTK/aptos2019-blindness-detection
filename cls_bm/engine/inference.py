@@ -46,7 +46,7 @@ def compute_on_dataset(model, data_loader, device, timer=None):
                 preds = preds.squeeze(-1)
                 preds = [o.to(cpu_device).item() for o in preds]
                 results_dict.update(
-                    {img_id: result for img_id, result in zip(targets, outputs)}
+                    {img_id: result for img_id, result in zip(targets, preds)}
                 )
     return results_dict
 
