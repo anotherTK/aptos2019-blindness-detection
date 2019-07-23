@@ -20,7 +20,11 @@ _MODELS = {
 
 def build_model(cfg):
 
-    model = _MODELS[cfg.MODEL.NAME](**{"num_classes": cfg.MODEL.NUM_CLASSES})
+    args = {"num_classes": cfg.MODEL.NUM_CLASSES}
+    if cfg.DATA.CATEGORY_LOSS_WEIGHT:
+        args["loss_weight"] = cfg.DATA.CATEGORY_LOSS_WEIGHT
+
+    model = _MODELS[cfg.MODEL.NAME](**args)
     
     return model
 

@@ -1,5 +1,6 @@
 
-
+import torch
+import torch.nn as nn
 from torchvision.models.resnet import ResNet, Bottleneck
 from cls_bm.utils.model_serialization import trim_model, align_and_update_state_dicts
 
@@ -16,8 +17,44 @@ model_urls = {
 }
 
 
+class _ResNet(ResNet):
+    def __init__(self, block, layers, num_classes=1000, zero_init_residual=False,
+                 groups=1, width_per_group=64, replace_stride_with_dilation=None,
+                 norm_layer=None, loss_weight=None):
+        super(_ResNet, self).__init__(
+            block, layers, num_classes, zero_init_residual,
+            groups, width_per_group, replace_stride_with_dilation,
+            norm_layer
+        )
+
+        if loss_weight:
+            self._loss = nn.CrossEntropyLoss(weight=torch.Tensor(loss_weight))
+
+    def forward(self, x, targets=None):
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.maxpool(x)
+
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+
+        x = self.avgpool(x)
+        x = x.reshape(x.size(0), -1)
+        x = self.fc(x)
+
+        if self.training:
+            x = self._loss(x, targets)
+            return dict(
+                total_loss=x
+            )
+        return x
+
+
 def _resnext(arch, block, layers, pretrained, **kwargs):
-    model = ResNet(block, layers, **kwargs)
+    model = _ResNet(block, layers, **kwargs)
     
     loaded_state_dict = model_zoo.load_url(model_urls[arch])
     loaded_state_dict = trim_model(loaded_state_dict, ["fc"])

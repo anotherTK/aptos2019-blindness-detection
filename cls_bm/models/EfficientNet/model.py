@@ -135,7 +135,7 @@ class MBConvBlock(nn.Module):
 class EfficientNet(nn.Module):
 
 
-    def __init__(self, blocks_args=None, global_params=None):
+    def __init__(self, blocks_args=None, global_params=None, loss_weight=None):
         super().__init__()
         assert isinstance(blocks_args, list), 'blocks_args should be a list'
         assert len(blocks_args) > 0, 'block args must be greater than 0'
@@ -207,7 +207,8 @@ class EfficientNet(nn.Module):
         self._fc = nn.Linear(out_channels, self._global_params.num_classes)
 
         # Loss函数
-        self._loss = nn.CrossEntropyLoss()
+        if loss_weight:
+            self._loss = nn.CrossEntropyLoss(weight=torch.Tensor(loss_weight))
 
         self._init_weights()
 
@@ -274,8 +275,12 @@ class EfficientNet(nn.Module):
     @classmethod
     def from_name(cls, model_name, num_models=8, **kwargs):
         cls._check_model_name_is_valid(model_name, num_models=num_models)
+        loss_weight = None
+        if "loss_weight" in kwargs:
+            loss_weight = kwargs["loss_weight"]
+            kwargs.pop("loss_weight")
         blocks_args, global_params = get_model_params(model_name, **kwargs)
-        return EfficientNet(blocks_args, global_params)
+        return EfficientNet(blocks_args, global_params, loss_weight)
 
     @classmethod
     def from_pretrained(cls, model_name, **kwargs):
