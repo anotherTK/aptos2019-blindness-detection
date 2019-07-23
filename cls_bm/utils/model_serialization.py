@@ -76,3 +76,17 @@ def load_state_dict(model, loaded_state_dict):
 
     # use strict loading
     model.load_state_dict(model_state_dict)
+
+
+def trim_model(state_dict, keys):
+    trimed_state_dict = collections.OrderedDict()
+    for key, value in state_dict.items():
+        flag = False
+        for trim_key in keys:
+            if trim_key in key:
+                flag = True
+                break
+        if not flag:
+            trimed_state_dict[key] = value
+
+    return trimed_state_dict

@@ -28,6 +28,7 @@ def compute_on_dataset(model, data_loader, device, timer=None):
                 timer.toc()
             if isinstance(targets, torch.Tensor):
                 # top-1 accuracy
+                targets = targets.to(device)
                 batch_size = targets.size(0)
                 _, pred = outputs.topk(1, 1, True, True)
                 pred = pred.t()
@@ -36,7 +37,7 @@ def compute_on_dataset(model, data_loader, device, timer=None):
                 if "correct" not in results_dict:
                     results_dict["correct"] = 0
                     results_dict["total"] = 0
-                results_dict["correct"] += correct_num
+                results_dict["correct"] += correct_num.to(cpu_device)
                 results_dict["total"] += batch_size
             else:
                 outputs = [o.to(cpu_device) for o in outputs]
@@ -113,3 +114,67 @@ def inference(
     if len(predictions.keys()) == 2:
         print(predictions)
 
+
+def inference_aug(
+    model,
+    dataset_name,
+    device="cuda",
+    output_folder=None,
+    aug_times=10,
+):
+    # convert to a torch.device for efficiency
+    device = torch.device(device)
+    num_devices = get_world_size()
+    logger = logging.getLogger("cls_bm.inference")
+    
+    total_predictions = {}
+    for i in range(aug_times):
+        data_loader = make_data_loader(
+            cfg, stage='test', is_distributed=distributed, test_aug=True)
+        dataset = data_loader.dataset
+        logger.info("Start evaluation on {} dataset({} images).".format(
+            dataset_name, len(dataset)))
+        total_timer = Timer()
+        inference_timer = Timer()
+        total_timer.tic()
+        predictions = compute_on_dataset(
+            model, data_loader, device, inference_timer)
+        # wait for all processes to complete before measuring the time
+        synchronize()
+        total_time = total_timer.toc()
+        total_time_str = get_time_str(total_time)
+        logger.info(
+            "Total run time: {} ({} s / img per device, on {} devices)".format(
+                total_time_str, total_time *
+                num_devices / len(dataset), num_devices
+            )
+        )
+        total_infer_time = get_time_str(inference_timer.total_time)
+        logger.info(
+            "Model inference time: {} ({} s / img per device, on {} devices)".format(
+                total_infer_time,
+                inference_timer.total_time * num_devices / len(dataset),
+                num_devices,
+            )
+        )
+
+        predictions = _accumulate_predictions_from_multiple_gpus(predictions)
+        if is_main_process():
+            for img_id, result in predictions.items():
+                if img_id not in total_predictions:
+                    total_predictions[img_id] = []
+                total_predictions[img_id].append(result)
+        
+    if not is_main_process():
+        return
+
+    # filter
+    predictions_aug = {}
+    for img_id, results in total_predictions.items():
+        bins = np.bincount(results)
+        pred = np.argmax(bins)
+        predictions_aug[img_id] = pred
+        
+    if output_folder:
+        torch.save(predictions_aug, os.path.join(
+            output_folder, "predictions_aug.pth"))

@@ -7,6 +7,7 @@ from torch.nn import functional as F
 from torch.utils import model_zoo
 
 from cls_bm.utils.model_serialization import align_and_update_state_dicts
+from cls_bm.utils.model_serialization import trim_model
 
 # 创建一个全局参数的命名组
 GlobalParams = collections.namedtuple('GlobalParams', ['batch_norm_momentum', 'batch_norm_epsilon', 'dropout_rate', 'num_classes', 'width_coefficient', 'depth_coefficient', 'depth_divisor', 'min_depth', 'drop_connect_rate'])
@@ -243,7 +244,7 @@ def efficientnet(width_coefficient=None, depth_coefficient=None, dropout_rate=0.
     return blocks_args, global_params
 
 
-def get_model_params(model_name, override_params):
+def get_model_params(model_name, **kwargs):
     # 返回模型的具体配置
     if model_name.startswith('efficientnet'):
         # width, depth, res, dropout
@@ -253,8 +254,8 @@ def get_model_params(model_name, override_params):
     else:
         raise NotImplementedError('model name is not pre-defined: %s' % model_name)
 
-    if override_params:
-        global_params = global_params._replace(**override_params)
+    if kwargs:
+        global_params = global_params._replace(**kwargs)
     
     return block_args, global_params
 
@@ -268,20 +269,6 @@ url_map = {
     'efficientnet-b4': 'http://storage.googleapis.com/public-models/efficientnet-b4-e116e8b3.pth',
     'efficientnet-b5': 'http://storage.googleapis.com/public-models/efficientnet-b5-586e6cc6.pth',
 }
-
-
-def trim_model(state_dict, keys):
-    trimed_state_dict = collections.OrderedDict()
-    for key, value in state_dict.items():
-        flag = False
-        for trim_key in keys:
-            if trim_key in key:
-                flag = True
-                break
-        if not flag:
-            trimed_state_dict[key] = value
-
-    return trimed_state_dict
 
 def load_pretrained_weights(model, model_name):
     loaded_state_dict = model_zoo.load_url(url_map[model_name])

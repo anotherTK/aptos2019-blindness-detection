@@ -272,15 +272,15 @@ class EfficientNet(nn.Module):
             raise ValueError('model_name should be one of: ' + ', '.join(valid_models))
 
     @classmethod
-    def from_name(cls, model_name, override_params=None, num_models=8):
+    def from_name(cls, model_name, num_models=8, **kwargs):
         cls._check_model_name_is_valid(model_name, num_models=num_models)
-        blocks_args, global_params = get_model_params(model_name, override_params)
+        blocks_args, global_params = get_model_params(model_name, **kwargs)
         return EfficientNet(blocks_args, global_params)
 
     @classmethod
-    def from_pretrained(cls, model_name, override_params=None):
+    def from_pretrained(cls, model_name, **kwargs):
         """目前官方只给了前六个预训练模型"""
-        model = EfficientNet.from_name(model_name, override_params=override_params, num_models=6)
+        model = EfficientNet.from_name(model_name, num_models=6, **kwargs)
         load_pretrained_weights(model, model_name)
         return model
 

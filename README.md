@@ -30,3 +30,15 @@ We using the images from aptos2019 and aptos2015, downloaded from kaggle data ke
 ```sh
 python tests/dataset/blindness/prepare_dataset.py
 ```
+
+# MileStone
+
+- [x] add efficientnet
+- [x] add wsl_resnext
+- [ ] add TTA test strategy
+- [ ] data distribution analysis
+
+
+# Model_zoo
+
+[details](MODEL_ZOO.md)

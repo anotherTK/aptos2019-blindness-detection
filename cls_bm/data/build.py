@@ -43,7 +43,7 @@ def make_batch_data_sampler(
     return batch_sampler
 
 
-def make_data_loader(cfg, stage='train', is_distributed=False, start_iter=0):
+def make_data_loader(cfg, stage='train', is_distributed=False, start_iter=0, test_aug=False):
     num_gpus = get_world_size()
     if stage == 'train':
         images_per_gpu = cfg.SOLVER.IMS_PER_GPU
@@ -55,7 +55,10 @@ def make_data_loader(cfg, stage='train', is_distributed=False, start_iter=0):
         num_iters = None
         start_iter = 0
     
-    transforms = build_transforms(cfg, stage=='train')
+    if test_aug:
+        transforms = build_transforms(cfg, True)
+    else:
+        transforms = build_transforms(cfg, stage=='train')
     dataset = build_dataset(cfg.DATA.DATASET, cfg.DATA.DATASET_ROOT, stage, transforms)
 
     sampler = make_data_sampler(dataset, shuffle, is_distributed)

@@ -1,7 +1,7 @@
 
 import functools
 from .EfficientNet import EfficientNet
-
+from .wsl_resnext import resnext101_32x8d_wsl, resnext101_32x16d_wsl, resnext101_32x32d_wsl, resnext101_32x48d_wsl
 
 _MODELS = {
     "efficientnet-b0": functools.partial(EfficientNet.from_pretrained, "efficientnet-b0"),
@@ -12,11 +12,15 @@ _MODELS = {
     "efficientnet-b5": functools.partial(EfficientNet.from_pretrained, "efficientnet-b5"),
     "efficientnet-b6": functools.partial(EfficientNet.from_name, "efficientnet-b6"),
     "efficientnet-b7": functools.partial(EfficientNet.from_name, "efficientnet-b7"),
-}
+    "resnext101_32x8d": functools.partial(resnext101_32x8d_wsl),
+    "resnext101_32x16d": functools.partial(resnext101_32x16d_wsl),
+    "resnext101_32x32d": functools.partial(resnext101_32x32d_wsl),
+    "resnext101_32x48d": functools.partial(resnext101_32x48d_wsl),
+    }
 
 def build_model(cfg):
 
-    model = _MODELS[cfg.MODEL.NAME](override_params={"num_classes": cfg.MODEL.NUM_CLASSES})
+    model = _MODELS[cfg.MODEL.NAME](**{"num_classes": cfg.MODEL.NUM_CLASSES})
     
     return model
 

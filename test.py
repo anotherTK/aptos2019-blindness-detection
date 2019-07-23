@@ -35,6 +35,7 @@ def main():
         help="The path to the checkpoint for test, default is the latest checkpoint.",
         default=None,
     )
+    parser.add_argument('--aug', action="store_true", help="Test Augment")
     parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
@@ -80,16 +81,24 @@ def main():
     output_folder = os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
     mkdir(output_folder)
 
-    data_loader_test = make_data_loader(
-        cfg, stage='test', is_distributed=distributed)
+    if args.aug:
+        inference_aug(
+            model,
+            dataset_name=dataset_name,
+            device=cfg.MODEL.DEVICE,
+            output_folder=output_folder,
+        )
+    else:
+        data_loader_test = make_data_loader(
+            cfg, stage='test', is_distributed=distributed)
 
-    inference(
-        model,
-        data_loader_val,
-        dataset_name=dataset_name,
-        device=cfg.MODEL.DEVICE,
-        output_folder=output_folder,
-    )
+        inference(
+            model,
+            data_loader_test,
+            dataset_name=dataset_name,
+            device=cfg.MODEL.DEVICE,
+            output_folder=output_folder,
+        )
     synchronize()
 
 
