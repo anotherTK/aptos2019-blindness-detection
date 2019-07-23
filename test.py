@@ -83,6 +83,7 @@ def main():
 
     if args.aug:
         inference_aug(
+            cfg,
             model,
             dataset_name=dataset_name,
             device=cfg.MODEL.DEVICE,
