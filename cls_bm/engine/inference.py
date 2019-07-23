@@ -7,6 +7,7 @@ import torch
 from tqdm import tqdm
 
 from cls_bm.config import cfg
+from cls_bm.data import make_data_loader
 from ..utils.comm import is_main_process, get_world_size
 from ..utils.comm import all_gather
 from ..utils.comm import synchronize
@@ -121,6 +122,7 @@ def inference_aug(
     device="cuda",
     output_folder=None,
     aug_times=10,
+    distributed=False,
 ):
     # convert to a torch.device for efficiency
     device = torch.device(device)

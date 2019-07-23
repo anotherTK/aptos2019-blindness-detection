@@ -2,5 +2,6 @@
 
 # EfficientNet
 
-| model | iters | lr  | acc-1 |
-| ----- | ----- | --- | ----- |
+| model           | iters | lr   | acc-1 |
+| --------------- | ----- | ---- | ----- |
+| efficientnet-b4 | 30k   | 0.01 | 83.80 |

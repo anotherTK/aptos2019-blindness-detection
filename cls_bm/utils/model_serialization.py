@@ -79,7 +79,7 @@ def load_state_dict(model, loaded_state_dict):
 
 
 def trim_model(state_dict, keys):
-    trimed_state_dict = collections.OrderedDict()
+    trimed_state_dict = OrderedDict()
     for key, value in state_dict.items():
         flag = False
         for trim_key in keys:

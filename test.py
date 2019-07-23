@@ -6,7 +6,7 @@ import os
 import torch
 from cls_bm.config import cfg
 from cls_bm.data import make_data_loader
-from cls_bm.engine.inference import inference
+from cls_bm.engine.inference import inference, inference_aug
 from cls_bm.models import build_model
 from cls_bm.utils.checkpoint import Checkpointer
 from cls_bm.utils.comm import synchronize, get_rank
@@ -77,7 +77,7 @@ def main():
     ckpt = cfg.MODEL.WEIGHT if args.ckpt is None else args.ckpt
     _ = checkpointer.load(ckpt, use_latest=args.ckpt is None)
 
-    dataset_name = cfg.DATA.DATASET_NAME
+    dataset_name = cfg.DATA.DATASET
     output_folder = os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
     mkdir(output_folder)
 
@@ -87,6 +87,7 @@ def main():
             dataset_name=dataset_name,
             device=cfg.MODEL.DEVICE,
             output_folder=output_folder,
+            distributed=distributed,
         )
     else:
         data_loader_test = make_data_loader(
