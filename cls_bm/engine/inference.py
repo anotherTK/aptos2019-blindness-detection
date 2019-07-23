@@ -30,9 +30,9 @@ def compute_on_dataset(model, data_loader, device, timer=None):
                 timer.toc()
             # top-1 accuracy
             _, preds = outputs.topk(1, 1, True, True)
-            preds = preds.t()
+            
             if isinstance(targets, torch.Tensor):
-                
+                preds = preds.t()
                 targets = targets.to(device)
                 batch_size = targets.size(0)
                 correct = preds.eq(targets.view(1, -1).expand_as(preds))
@@ -43,6 +43,7 @@ def compute_on_dataset(model, data_loader, device, timer=None):
                 results_dict["correct"] += correct_num.to(cpu_device)
                 results_dict["total"] += batch_size
             else:
+                preds = preds.squeeze(-1)
                 preds = [o.to(cpu_device).item() for o in preds]
                 results_dict.update(
                     {img_id: result for img_id, result in zip(targets, outputs)}
