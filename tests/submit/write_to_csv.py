@@ -27,7 +27,7 @@ def main(args):
         csv_writer.writerow(csv_head)
         
         for img_id in img_ids:
-            csv_writer.writerow([img_id, predictions[img_id]])
+            csv_writer.writerow([img_id.split('/')[-1], predictions[img_id]])
 
     print("The results has saved to {}".format(args.s))
 

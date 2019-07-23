@@ -35,7 +35,7 @@ python tests/dataset/blindness/prepare_dataset.py
 
 - [x] add efficientnet
 - [x] add wsl_resnext
-- [ ] add TTA test strategy
+- [x] add TTA test strategy
 - [ ] data distribution analysis
 
 
