@@ -29,6 +29,8 @@ class _ResNet(ResNet):
 
         if loss_weight:
             self._loss = nn.CrossEntropyLoss(weight=torch.Tensor(loss_weight))
+        else:
+            self._loss = nn.CrossEntropyLoss()
 
     def forward(self, x, targets=None):
         x = self.conv1(x)

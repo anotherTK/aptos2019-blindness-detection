@@ -209,6 +209,8 @@ class EfficientNet(nn.Module):
         # Loss函数
         if loss_weight:
             self._loss = nn.CrossEntropyLoss(weight=torch.Tensor(loss_weight))
+        else:
+            self._loss = nn.CrossEntropyLoss()
 
         self._init_weights()
 
