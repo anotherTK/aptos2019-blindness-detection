@@ -36,7 +36,9 @@ python tests/dataset/blindness/prepare_dataset.py
 - [x] add efficientnet
 - [x] add wsl_resnext
 - [x] add TTA test strategy
-- [ ] data distribution analysis
+- [x] data distribution analysis
+- [x] dataset mean and std
+- [ ] NAS
 
 
 # Model_zoo

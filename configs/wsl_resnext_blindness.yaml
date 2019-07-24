@@ -1,6 +1,6 @@
-OUTPUT_DIR: "work_dirs/efficientnet-b7"
+OUTPUT_DIR: "work_dirs/wsl_resnext"
 MODEL:
-  NAME: "efficientnet-b7"
+  NAME: "resnext101_32x32d"
   NUM_CLASSES: 5
 
 SOLVER:
@@ -10,15 +10,13 @@ SOLVER:
   BASE_LR: 0.001
 
 DATA:
-  INPUT_SIZE: 600
+  INPUT_SIZE: 448
   BRIGHTNESS: 0.05
   CONTRAST: 0.1
   SATURATION: 0.05
   HUE: 0.005
   ROTATION_DEGREES: 120
   CATEGORY_LOSS_WEIGHT: [2, 15, 7, 50, 50]
-  PIXEL_MEAN: [109.9776, 75.7212, 52.5703]
-  PIXEL_STD: [0.2742, 0.1994, 0.1680]
 
 TEST:
   IMS_PER_GPU: 2
